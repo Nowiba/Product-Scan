@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Page</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <h1>Admin Panel</h1>
+  <form id="product-form">
+    <input type="text" id="barcode" placeholder="Barcode" required>
+    <input type="text" id="product-name" placeholder="Product Name" required>
+    <input type="text" id="product-price" placeholder="Product Price" required>
+    <input type="text" id="product-image-url" placeholder="Product Image URL" required>
+    <button type="submit">Add Product</button>
+  </form>
+
+  <footer>
+    <p>&copy; 2024 Scan FTW. All Rights Reserved.</p>
+  </footer>
+
+  <script type="module">
+    // Firebase Configuration
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCL9MoGTY4elBrv0nH5t4tKNwbDc3uWUik",
+      authDomain: "scan-ftw.firebaseapp.com",
+      databaseURL: "https://scan-ftw-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "scan-ftw",
+      storageBucket: "scan-ftw.firebasestorage.app",
+      messagingSenderId: "468232549663",
+      appId: "1:468232549663:web:793580be90379902f8ac2a"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    const productForm = document.getElementById('product-form');
+
+    // Form Submit Event Listener
+    productForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const barcode = document.getElementById('barcode').value;
+      const name = document.getElementById('product-name').value;
+      const price = document.getElementById('product-price').value;
+      const imageUrl = document.getElementById('product-image-url').value;
+
+      // Check if fields are valid
+      if (!barcode || !name || !price || !imageUrl) {
+        alert("All fields are required!");
+        return;
+      }
+
+      // Reference to the Firebase database location
+      const productRef = ref(database, 'products/' + barcode);
+
+      // Save product details to Firebase
+      try {
+        await set(productRef, { name, price, imageUrl });
+        alert("Product added successfully!");
+        productForm.reset(); // Clear the form
+      } catch (error) {
+        alert("Error adding product: " + error.message);
+      }
+    });
+  </script>
+</body>
+</html>
